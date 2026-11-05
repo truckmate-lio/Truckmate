@@ -18,3 +18,12 @@ Sauvegarder les données via Réglages avant mise à jour. Décompresser puis en
 
 ## Important
 Simulation de paie indicative. Les heures de nuit visualisées ne sont pas nécessairement éligibles à une majoration. Le chronomètre n’enregistre pas automatiquement de pause. Vérifier manuellement toute journée de plus de 24 heures.
+
+
+## Version 3.0.1 — correctifs d’affichage
+- Mise en page adaptative iPhone et Android (date/heure, journal, réglages, import JSON, navigation).
+- Zones tactiles de navigation conservées légèrement agrandies.
+- Numéro de version des ressources et du service worker actualisé pour le rafraîchissement.
+- Aucun changement des clés de stockage, des calculs ou de la logique métier.
+
+**Important :** exporter une sauvegarde JSON avant la mise à jour. Ne pas désinstaller l'application pour actualiser son interface. Tester l'affichage sur appareils réels.
