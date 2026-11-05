@@ -8,3 +8,24 @@
 
 /* V1.3: compact collapsible week groups */
 .week-group{margin:10px 0;border:1px solid #354c6d;border-radius:14px;background:#14243a;overflow:hidden}.week-group summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;padding:15px;list-style:none}.week-group summary::-webkit-details-marker{display:none}.week-group summary span{display:grid;gap:5px}.week-group summary small,.day-row small{color:#a8b7ce;font-size:12px}.week-group summary:after{content:'⌄';color:#ff963d}.week-group[open] summary:after{content:'⌃'}.week-entries{border-top:1px solid #314764}.day-row{display:flex;width:100%;align-items:center;justify-content:space-between;text-align:left;gap:10px;background:transparent;color:#e9f0fa;border-radius:0;border-bottom:1px solid #2c405b;padding:13px 15px;font-weight:500}.day-row:last-child{border-bottom:0}.day-row span:first-child{display:grid;gap:5px}.day-row .accent{white-space:nowrap;font-weight:750}#payPeriod{margin:10px 0}
+
+/* TruckElsass V2.0 - modern Alsace red and charcoal */
+:root{--red:#f32936;--red2:#ff555e;--ink:#090d16;--panel:#151f30;--stroke:#344056;color:#f4f6fb;background:var(--ink);color-scheme:dark}
+body{background:radial-gradient(ellipse at 50% -15%,#321622 0%,#0a0e18 46%,#090d16 100%);min-height:100vh}
+header{background:linear-gradient(120deg,#0d111c,#1b1721);border-bottom:1px solid #4b2630;padding:18px max(18px,env(safe-area-inset-left));box-shadow:0 7px 30px #0005}
+.brand{font-size:25px;letter-spacing:-.6px;font-weight:900;font-style:italic}.brand span:not(.brand-icon){color:#ff3644}.brand-icon{font-size:22px;font-style:normal;margin-right:5px}
+header small,.muted{color:#aab4c8}
+main{padding-top:22px}h1{font-size:29px;letter-spacing:-.8px}h2{font-size:19px;letter-spacing:-.3px}
+button{background:linear-gradient(145deg,#ff4550,#cf152b);color:white;box-shadow:0 5px 16px #e51b3430;border-radius:14px}
+button.secondary,.file{background:#273349;color:#f5f6fc;box-shadow:none}button.danger{background:#83202e}
+input,select,textarea{background:#172032;border-color:#44516a;border-radius:13px}
+.card,.stat{background:linear-gradient(145deg,#1b2940,#131b2a);border:1px solid #35445e;border-radius:18px;box-shadow:0 6px 18px #0002}
+.stat strong{color:#f6f7fa}.stat:first-child strong{color:#ff535c}.accent{color:#ff555e}
+.notice{background:#202b40;color:#d7dfea}.warning{color:#ffb99e}
+.table-scroll,.week-group{border-color:#3b4a64;border-radius:17px}.week-table th{background:#243450;color:#e4eaf6}.week-table td,.week-group{background:#172235}
+.week-group summary{background:linear-gradient(90deg,#202d44,#1b2638)}.week-group summary:after{color:#ff4857}.day-row{color:#f5f6fa}
+.day-summary{background:#182b3e;border-color:#5c4659}.check{background:#202c42}.check input{accent-color:#ed263c}
+nav{background:#0c1423;border-top:1px solid #3c2836;box-shadow:0 -8px 25px #0006;gap:1px}nav button{font-size:18px;padding:6px 2px;box-shadow:none;border-radius:12px}nav button.active{color:#ff4a58;background:#381a2b}nav button span{font-size:10px}
+.hero{background:linear-gradient(130deg,#331421,#151c2c 62%,#101a2b);border:1px solid #683141;border-radius:22px;padding:25px 20px;position:relative;overflow:hidden;box-shadow:0 12px 35px #0004}.hero:after{content:'✦';position:absolute;font-size:120px;right:-15px;top:-34px;color:#ff36441a}.hero-kicker{font-size:11px;color:#ff7b84;letter-spacing:1.3px;font-weight:850}.hero h1{font-size:30px;line-height:1.15;margin:14px 0}.hero em{color:#ff4754;font-style:italic}.hero p{color:#d4dbea;font-size:14px}
+.home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.home-grid button{background:linear-gradient(145deg,#1d2a40,#101827);border:1px solid #374962;box-shadow:0 6px 20px #0003;display:flex;flex-direction:column;gap:8px;align-items:flex-start;min-height:134px;font-size:27px;text-align:left;padding:17px}.home-grid button:first-child{background:linear-gradient(145deg,#a8172c,#3a1426);border-color:#d83245}.home-grid strong{font-size:17px}.home-grid small{font-size:12px;color:#b7c4d9}.home-summary{margin-top:25px}
+@media(max-width:360px){nav button span{font-size:9px}.brand{font-size:22px}}
