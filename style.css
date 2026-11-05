@@ -82,3 +82,37 @@ nav{background:linear-gradient(#111b2a,#070c16);border:1px solid #344359;border-
 /* Explicit colored functional icons matching the reference mockup */
 .ico-moon{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M20.3 15.7A9 9 0 0 1 8.3 3.7 9 9 0 1 0 20.3 15.7Z'/%3E%3C/svg%3E");-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M20.3 15.7A9 9 0 0 1 8.3 3.7 9 9 0 1 0 20.3 15.7Z'/%3E%3C/svg%3E")}.ico-clock{mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9' stroke='black' stroke-width='3' fill='none'/%3E%3Cpath d='M12 6v6l4 3' stroke='black' stroke-width='3' fill='none'/%3E%3C/svg%3E");-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9' stroke='black' stroke-width='3' fill='none'/%3E%3Cpath d='M12 6v6l4 3' stroke='black' stroke-width='3' fill='none'/%3E%3C/svg%3E")}
 @media(max-width:375px){main{padding-left:11px;padding-right:11px}.month-mini-stat small{font-size:9px}.pay-totals strong{font-size:17px}.hero{min-height:180px}}
+
+/* TruckElsass V2.4: visual refinements + functional monthly calendar */
+.brand{display:flex;align-items:baseline;justify-content:center;gap:0;white-space:nowrap;letter-spacing:-1.25px}
+.brand .brand-truck{color:#ffffff!important;background:none!important;-webkit-text-fill-color:#ffffff!important;text-shadow:0 2px 8px #0009}
+.brand .brand-elsass{color:#ff293e!important;background:none!important;-webkit-text-fill-color:#ff293e!important;text-shadow:0 0 14px #ff263c66}
+.brand .brand-mark{font-style:normal;font-size:18px;transform:rotate(-12deg);margin-left:7px}
+.hero{background-position:center 36%;min-height:178px}
+.hero h1{margin-top:12px}
+.home-grid button{min-height:118px}
+.home-month-panel{margin-top:4px;display:block!important;padding:0!important}
+.home-month-title{display:flex;align-items:center;gap:9px;padding:11px 13px;background:linear-gradient(100deg,#a90b26,#3e1722 72%,#121c2a);font-size:15px;text-transform:capitalize}
+.home-month-title i{display:inline-block;width:20px;height:20px;background:#fff;mask-size:contain;-webkit-mask-size:contain;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat}
+.home-month-rows{padding:2px 12px 5px}
+.home-month-row i{background:#ff3048}
+#dashboard .table-scroll[hidden]{display:none!important}
+#dashboard #days{margin-top:12px}
+#dashboard .week-group summary{background:linear-gradient(90deg,#251823,#111a29);border-radius:13px}
+#journal .journal-panel{background:linear-gradient(155deg,rgba(25,36,52,.8),rgba(8,13,22,.94));border:1px solid #c02b42;border-radius:18px;padding:15px 13px 18px;box-shadow:0 0 22px #c9112920,inset 0 1px #ffffff13}
+#journal .journal-panel input:not([type=checkbox]),#journal .journal-panel select,#journal .journal-panel textarea{border-color:#46546a;background:#101a28}
+#journal .journal-panel input:focus,#journal .journal-panel select:focus,#journal .journal-panel textarea:focus{border-color:#ff3049;outline:1px solid #ff304977;box-shadow:0 0 10px #ff304933}
+#journal .day-summary{border:1px solid #e62c46;background:linear-gradient(110deg,#17283b,#25111f);box-shadow:0 0 12px #e62c4628;border-radius:13px}
+#journal .day-summary strong:last-child{color:#ff314b}
+#journal button[type=submit]{background:linear-gradient(110deg,#f52a42,#9c0921);box-shadow:0 0 17px #ed1c384a}
+.month-calendar-view{margin-top:12px;border:1px solid #37495f;border-radius:16px;background:linear-gradient(150deg,#142031,#080f1b);padding:12px 8px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.calendar-weekday{text-align:center;font-weight:800;color:#aebcd0;font-size:12px;padding:6px 0 8px}
+.calendar-day{min-width:0;min-height:58px;padding:7px 1px;border-radius:10px;border:1px solid #29394e;background:#101b2b;color:#dce5f0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;box-shadow:none}
+.calendar-day strong{font-size:14px}.calendar-day small{font-size:9px;color:#8999ac;white-space:nowrap}
+.calendar-day.filled{border-color:#f33751;background:linear-gradient(155deg,#8c0a23,#2a1221);box-shadow:0 0 10px #e8213933}
+.calendar-day.filled small{color:#fff;font-weight:700}
+.calendar-day.today{outline:2px solid #ffba42;outline-offset:-2px}
+.calendar-day:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.calendar-hint{text-align:center;color:#aebcd0;font-size:11px;margin:12px 0 0}
+@media(max-width:375px){.calendar-grid{gap:3px}.calendar-day{min-height:53px}.calendar-day strong{font-size:13px}.calendar-day small{font-size:8px}.brand{font-size:30px}}

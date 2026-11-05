@@ -1,7 +1,15 @@
-TruckElsass V2.3 — refonte visuelle inspirée de la maquette.
+# TruckElsass V2.4
 
-Conserve la clé locale truckmate.v1 et les calculs existants.
+Mise à jour visuelle et fonctionnelle de la V2.3.
 
-Sauvegarder les données JSON avant mise à jour. Charger les 9 fichiers à la racine du dépôt GitHub Pages.
+- Logo **Truck** blanc et **Elsass** rouge.
+- Journées enregistrées dans « Ma semaine » regroupées en sections dépliables, avec édition au toucher.
+- Journal quotidien : encadré, champs et résumé accentués en rouge.
+- « Mon mois » : onglet Calendrier fonctionnel, affichage des jours, horaires calculés des journées saisies, toucher pour modifier une journée ou en ajouter une.
+- Accueil : panneau mensuel et présentation harmonisée.
+- Les paramètres, les calculs et la clé de stockage locale existants restent inchangés.
 
-L’interface et les calculs restent à tester sur iPhone. Les estimations de paie ne sont pas un bulletin officiel.
+Avant la mise à jour : exporter une sauvegarde JSON depuis Réglages.
+Décompresser et envoyer les 9 fichiers à la racine du dépôt GitHub Pages, puis Commit changes. Ne pas désinstaller l’application pour actualiser le site.
+
+Les heures de nuit ne sont pas automatiquement déduites des horaires rapides ; elles nécessitent une saisie/qualification. Les montants de paie sont indicatifs.

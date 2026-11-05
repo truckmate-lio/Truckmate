@@ -31,7 +31,7 @@ const mondayOf=date=>{const d=new Date(date+'T12:00:00');d.setDate(d.getDate()-(
 const weekEnding=start=>{const d=new Date(start+'T12:00:00');d.setDate(d.getDate()+6);return iso(d)};
 const groupByWeek=days=>{const map=new Map();days.forEach(d=>{const k=mondayOf(d.date);if(!map.has(k))map.set(k,[]);map.get(k).push(d)});return [...map.entries()].sort((a,b)=>b[0].localeCompare(a[0]))};
 function groupedMarkup(days, expandedWeek=''){const groups=groupByWeek(days);if(!groups.length)return '<p class="muted">Aucune journée enregistrée.</p>';return groups.map(([start,items])=>{const total=items.reduce((a,d)=>a+dayWork(d),0),title=`${new Date(start+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})} – ${new Date(weekEnding(start)+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}`;return `<details class="week-group" ${start===expandedWeek?"open":""}><summary><span><strong>${safe(title)}</strong><small>${items.length} journée(s)</small></span><strong class="accent">${fmt(total)}</strong></summary><div class="week-entries">${items.map(d=>{const x=counts(d);return `<button type="button" class="day-row" data-edit="${safe(d.id)}"><span><strong>${safe(weekDate(d))}</strong><small>${safe(d.start)}–${safe(d.end)} · Pause ${fmt(x.breaks)}</small></span><span class="accent">${fmt(dayWork(d))} ✎</span></button>`}).join('')}</div></details>`}).join('')}
-function renderHome(){const ds=state.days.filter(d=>d.date.startsWith(today().slice(0,7)));const mins=ds.reduce((n,d)=>n+dayWork(d),0);const s=sums(ds);const p=profile();const now=new Date();$('homeMonthLabel').textContent=now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});const rows=[['Jours travaillés',String(ds.length),'ico-calendar-days'],['Heures totales',fmt(mins),'ico-chart-no-axes-column-increasing'],['Heures de nuit renseignées',fmt(s.night),'ico-moon'],['Heures sup. (simulation)',fmt(Math.max(0,mins/60-num(p.threshold))*60),'ico-clock']];$('homeStats').innerHTML=rows.map(([label,val,ico])=>`<div class="home-month-row"><i aria-hidden="true" class="${ico}"></i><span>${label}</span><strong>${val}</strong></div>`).join('')}
+function renderHome(){const ds=state.days.filter(d=>d.date.startsWith(today().slice(0,7)));const mins=ds.reduce((n,d)=>n+dayWork(d),0);const s=sums(ds);const p=profile();const now=new Date();$('homeMonthLabel').textContent=now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});const rows=[['Jours travaillés',String(ds.length),'ico-calendar-days'],['Heures totales',fmt(mins),'ico-chart-no-axes-column-increasing'],['Heures de nuit renseignées',fmt(s.night),'ico-moon'],['Heures sup. (simulation)',fmt(Math.max(0,mins/60-num(p.threshold))*60),'ico-clock']];$('homeMonthRows').innerHTML=rows.map(([label,val,ico])=>`<div class="home-month-row"><i aria-hidden="true" class="${ico}"></i><span>${label}</span><strong>${val}</strong></div>`).join('')}
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));
 function renderDashboard(){const days=weekDays(),s=sums(days),start=weekStart(),end=new Date(start);end.setDate(end.getDate()+6);$('period').textContent=`${start.toLocaleDateString('fr-FR')} – ${end.toLocaleDateString('fr-FR')}`;const amp=days.reduce((a,d)=>a+duration(d.start,d.end),0),work=days.reduce((a,d)=>a+dayWork(d),0);const items=[['Temps calculé*',work],['Amplitude',amp],['Pauses',s.breaks],['Conduite détaillée',s.drive],['Attente détaillée',s.wait],['Nuit éligible',s.night]];$('stats').innerHTML=items.map(([name,value])=>`<div class="stat"><small>${name}</small><strong>${fmt(value)}</strong></div>`).join('');$('daysTable').innerHTML=days.length?days.map(d=>{const x=counts(d);return `<tr><td>${safe(weekDate(d))}</td><td>${safe(d.start)}</td><td>${safe(d.end)}</td><td>${fmt(x.breaks)}</td><td class="accent">${fmt(dayWork(d))}</td><td><button class="secondary mini" data-edit="${safe(d.id)}">✎</button></td></tr>`}).join(''):'<tr><td colspan="6">Aucune journée cette semaine.</td></tr>';$('days').innerHTML=groupedMarkup(days,iso(weekStart()))}
 function renderMonth(){
@@ -42,9 +42,32 @@ function renderMonth(){
  $('monthStats').innerHTML=[['Jours',days.length+'','ico-calendar-days','red'],['Travail',fmt(work),'ico-clock','orange'],['Nuit saisie',fmt(tot.night),'ico-moon','purple'],['Brut indicatif',euros(work/60*num(p.rate)),'ico-coins','gold']].map(([name,value,ico,color])=>`<div class="month-mini-stat ${color}"><i aria-hidden="true" class="${ico}"></i><strong>${safe(value)}</strong><small>${safe(name)}</small></div>`).join('');
  $('monthGroups').innerHTML=groupedMarkup(days,iso(weekStart()));
  $('monthTable').innerHTML=days.length?days.map(d=>{const x=counts(d);return `<tr><td>${safe(weekDate(d))}</td><td>${safe(d.start)}</td><td>${safe(d.end)}</td><td>${fmt(x.breaks)}</td><td class="accent">${fmt(dayWork(d))}</td><td><button class="secondary mini" data-edit="${safe(d.id)}">✎</button></td></tr>`}).join(''):'<tr><td colspan="6">Aucune journée enregistrée ce mois.</td></tr>';
+ renderCalendarGrid(year,month,days);
  $('monthPay').innerHTML=payMarkup(days,'month');
 
 }
+
+function renderCalendarGrid(year,month,days){
+ const grid=$('calendarGrid');if(!grid)return;
+ const first=new Date(year,month,1),last=new Date(year,month+1,0).getDate();
+ const offset=(first.getDay()+6)%7;
+ const byDate=new Map(days.map(d=>[d.date,d]));
+ const weekday=['L','M','M','J','V','S','D'];
+ let out=weekday.map((name,i)=>`<span class="calendar-weekday" aria-label="${['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'][i]}">${name}</span>`).join('');
+ for(let i=0;i<offset;i++)out+='<span class="calendar-empty" aria-hidden="true"></span>';
+ for(let n=1;n<=last;n++){
+  const date=`${year}-${String(month+1).padStart(2,'0')}-${String(n).padStart(2,'0')}`;
+  const d=byDate.get(date),todayClass=date===today()?' today':'',filled=d?' filled':'';
+  out+=`<button type="button" class="calendar-day${filled}${todayClass}" data-calendar-date="${date}" aria-label="${n} ${first.toLocaleDateString('fr-FR',{month:'long'})}${d?', '+fmt(dayWork(d))+' de travail':', ajouter une journée'}"><strong>${n}</strong>${d?`<small>${fmt(dayWork(d))}</small>`:'<small>+</small>'}</button>`;
+ }
+ grid.innerHTML=out;
+}
+$('calendarGrid').addEventListener('click',e=>{
+ const button=e.target.closest('[data-calendar-date]');if(!button)return;
+ const date=button.dataset.calendarDate,entry=state.days.find(d=>d.date===date);
+ if(entry){editDay(entry.id)}else{resetDay();$('date').value=date;show('journal');validate()}
+});
+
 $('monthPrev').onclick=()=>{viewedMonth.setMonth(viewedMonth.getMonth()-1);renderMonth()};
 $('monthNext').onclick=()=>{viewedMonth.setMonth(viewedMonth.getMonth()+1);renderMonth()};
 $('monthToday').onclick=()=>{viewedMonth=new Date();viewedMonth.setDate(1);renderMonth()};
