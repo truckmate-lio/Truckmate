@@ -13,3 +13,7 @@ Avant la mise à jour : exporter une sauvegarde JSON depuis Réglages.
 Décompresser et envoyer les 9 fichiers à la racine du dépôt GitHub Pages, puis Commit changes. Ne pas désinstaller l’application pour actualiser le site.
 
 Les heures de nuit ne sont pas automatiquement déduites des horaires rapides ; elles nécessitent une saisie/qualification. Les montants de paie sont indicatifs.
+
+
+## Correctif V2.4.1
+Correction du plantage JavaScript causé par une référence à `monthTable`, élément supprimé lors de la refonte. Navigation, mois et calendrier restaurés. Données locales inchangées (`truckmate.v1`).

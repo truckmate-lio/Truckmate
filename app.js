@@ -41,7 +41,7 @@ function renderMonth(){
  $('monthLabel').textContent=viewedMonth.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
  $('monthStats').innerHTML=[['Jours',days.length+'','ico-calendar-days','red'],['Travail',fmt(work),'ico-clock','orange'],['Nuit saisie',fmt(tot.night),'ico-moon','purple'],['Brut indicatif',euros(work/60*num(p.rate)),'ico-coins','gold']].map(([name,value,ico,color])=>`<div class="month-mini-stat ${color}"><i aria-hidden="true" class="${ico}"></i><strong>${safe(value)}</strong><small>${safe(name)}</small></div>`).join('');
  $('monthGroups').innerHTML=groupedMarkup(days,iso(weekStart()));
- $('monthTable').innerHTML=days.length?days.map(d=>{const x=counts(d);return `<tr><td>${safe(weekDate(d))}</td><td>${safe(d.start)}</td><td>${safe(d.end)}</td><td>${fmt(x.breaks)}</td><td class="accent">${fmt(dayWork(d))}</td><td><button class="secondary mini" data-edit="${safe(d.id)}">✎</button></td></tr>`}).join(''):'<tr><td colspan="6">Aucune journée enregistrée ce mois.</td></tr>';
+
  renderCalendarGrid(year,month,days);
  $('monthPay').innerHTML=payMarkup(days,'month');
 
@@ -71,7 +71,6 @@ $('calendarGrid').addEventListener('click',e=>{
 $('monthPrev').onclick=()=>{viewedMonth.setMonth(viewedMonth.getMonth()-1);renderMonth()};
 $('monthNext').onclick=()=>{viewedMonth.setMonth(viewedMonth.getMonth()+1);renderMonth()};
 $('monthToday').onclick=()=>{viewedMonth=new Date();viewedMonth.setDate(1);renderMonth()};
-$('monthTable').addEventListener('click',e=>{const id=e.target.closest('[data-edit]')?.dataset.edit;if(id)editDay(id)});
 function payMarkup(days,period){
  const p=profile(),rate=num(p.rate),threshold=num(p.threshold),nightPct=num(p.nightRate),otPct=num(p.ot);
  const groups=groupByWeek(days),weeklyTotals=groups.map(([start])=>{const all=state.days.filter(d=>mondayOf(d.date)===start),s=sums(all);return {start,all,s,paid:(all.reduce((a,d)=>a+dayWork(d),0)+(p.waitingMode==='included'?s.wait:0))/60}});
