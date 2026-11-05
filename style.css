@@ -116,3 +116,24 @@ nav{background:linear-gradient(#111b2a,#070c16);border:1px solid #344359;border-
 .calendar-day:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .calendar-hint{text-align:center;color:#aebcd0;font-size:11px;margin:12px 0 0}
 @media(max-width:375px){.calendar-grid{gap:3px}.calendar-day{min-height:53px}.calendar-day strong{font-size:13px}.calendar-day small{font-size:8px}.brand{font-size:30px}}
+
+/* TruckElsass 3.0 — accessible touch targets, coherent visual hierarchy */
+:root{color-scheme:dark;--alsace-red:#ff354d;--alsace-white:#f7f9ff}
+body{background:radial-gradient(ellipse 85% 42% at 50% -10%,#57162755,transparent 75%),#070c15}
+header{isolation:isolate}.brand{font-weight:900;letter-spacing:-1.2px}.brand .brand-truck{color:#fff!important;-webkit-text-fill-color:#fff!important}.brand .brand-elsass{color:#ff344b!important;-webkit-text-fill-color:#ff344b!important}.brand .brand-mark{color:#fff!important}
+.hero{border:1px solid #7c3445;border-radius:19px;box-shadow:0 12px 32px #0008,inset 0 0 0 1px #ffffff14;background-position:center 42%}
+.home-grid button,.service-card,.home-month-panel,.month-mini-stat,.week-group,.pay-card{transition:border-color .15s ease,transform .15s ease}
+.home-grid button:active,nav button:active{transform:scale(.98)}
+.home-grid button{min-height:124px;touch-action:manipulation}
+nav button{min-height:57px;touch-action:manipulation}nav button .nav-icon{width:25px;height:25px}
+.service-card{margin:14px 0 16px;padding:14px;border:1px solid #aa3146;border-radius:17px;background:linear-gradient(120deg,#1c293b,#250e1c);display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 0 20px #f1243720}
+.service-card>div{display:grid;gap:3px}.service-card small{font-size:10px;letter-spacing:.12em;color:#ff7c8d;font-weight:800}.service-card strong{font-size:15px}.service-card span{font-size:20px;font-weight:900;font-variant-numeric:tabular-nums;color:white}.service-card button{min-width:110px;padding:14px 12px;background:linear-gradient(120deg,#ff344c,#a20925);border-radius:12px}.service-card button.running{background:linear-gradient(120deg,#e39c29,#8c4b08)}
+.home-tools{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.home-tools button{min-height:48px;padding:10px 8px;font-size:12px}
+.night-preview{font-size:12px;color:#e8bbcf;background:#311824;border-left:3px solid #f24a62;border-radius:8px;padding:10px;margin:10px 0}
+.absence-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#131e2c;border:1px solid #33445b;border-radius:12px;padding:12px;margin:8px 0}.absence-row span{display:grid;gap:4px}.absence-row small{color:#aebbd0;font-size:12px}.absence-row button{flex-shrink:0}
+#absences .journal-panel{border:1px solid #ae3048;background:linear-gradient(150deg,#192638,#0c101b);border-radius:16px;padding:14px}
+.month-mini-stat.red i{background:#ff344b}.month-mini-stat.orange i{background:#ffac42}.month-mini-stat.purple i{background:#b996ff}.month-mini-stat.gold i{background:#ffd06b}
+.page[hidden],[hidden]{display:none!important}
+#printReport{display:none}
+@media print{body{background:white!important;color:#111!important}body>header,body>main,body>nav{display:none!important}#printReport{display:block!important;padding:12mm;font:12px system-ui;color:#111}#printReport h1{color:#111}#printReport table{width:100%;border-collapse:collapse}#printReport td,#printReport th{padding:8px 4px;border-bottom:1px solid #bbb;text-align:left}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}

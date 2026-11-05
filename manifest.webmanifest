@@ -2,7 +2,7 @@
   "name": "TruckElsass — Ton travail. Tes heures. Ton argent.",
   "short_name": "TruckElsass",
   "description": "Journal de travail et simulation de paie pour chauffeurs routiers",
-  "start_url": "./index.html?v=2.4.1",
+  "start_url": "./index.html?v=3.0.0",
   "scope": "./",
   "display": "standalone",
   "background_color": "#05080d",

@@ -1,19 +1,20 @@
-# TruckElsass V2.4
+# TruckElsass V3.0
 
-Mise à jour visuelle et fonctionnelle de la V2.3.
+Base : V2.4.1 transmise par l’utilisateur.
 
-- Logo **Truck** blanc et **Elsass** rouge.
-- Journées enregistrées dans « Ma semaine » regroupées en sections dépliables, avec édition au toucher.
-- Journal quotidien : encadré, champs et résumé accentués en rouge.
-- « Mon mois » : onglet Calendrier fonctionnel, affichage des jours, horaires calculés des journées saisies, toucher pour modifier une journée ou en ajouter une.
-- Accueil : panneau mensuel et présentation harmonisée.
-- Les paramètres, les calculs et la clé de stockage locale existants restent inchangés.
+## Nouveautés
+- Design peaufiné avec boutons confortables, couleurs alsaciennes et cartes homogènes.
+- Chronomètre de service facultatif : début/fin, sans sauvegarde silencieuse d’une journée.
+- Congés et absences stockés séparément.
+- Prévisualisation indicative de la plage de nuit personnalisable, **avant déduction des pauses**, sans prime automatique.
+- Impression / export PDF via la feuille d’impression iOS.
+- Cache versionné et navigation réseau prioritaire pour les pages.
 
-Avant la mise à jour : exporter une sauvegarde JSON depuis Réglages.
-Décompresser et envoyer les 9 fichiers à la racine du dépôt GitHub Pages, puis Commit changes. Ne pas désinstaller l’application pour actualiser le site.
+## Données
+La clé `truckmate.v1` est conservée. Les journées et profils existants sont repris. Les absences et la plage de nuit sont des champs supplémentaires optionnels, inclus dans les exports JSON.
 
-Les heures de nuit ne sont pas automatiquement déduites des horaires rapides ; elles nécessitent une saisie/qualification. Les montants de paie sont indicatifs.
+## Installation
+Sauvegarder les données via Réglages avant mise à jour. Décompresser puis envoyer les neuf fichiers à la racine du dépôt GitHub Pages. Ne pas désinstaller l’ancienne application avant vérification.
 
-
-## Correctif V2.4.1
-Correction du plantage JavaScript causé par une référence à `monthTable`, élément supprimé lors de la refonte. Navigation, mois et calendrier restaurés. Données locales inchangées (`truckmate.v1`).
+## Important
+Simulation de paie indicative. Les heures de nuit visualisées ne sont pas nécessairement éligibles à une majoration. Le chronomètre n’enregistre pas automatiquement de pause. Vérifier manuellement toute journée de plus de 24 heures.

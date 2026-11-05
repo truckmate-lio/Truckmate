@@ -1,10 +1,11 @@
 'use strict';
 const KEY='truckmate.v1';
 const defaultProfile=()=>({rate:18.5,threshold:35,ot:25,nightRate:20,meal:15,bonus:0,waitingMode:'pending',deduction:22,monthlyBonus:0,dailyBonus:0,dailyAllowance:0});
-const defaultState=()=>({days:[],country:'FR',profiles:{FR:defaultProfile(),DE:defaultProfile()}});
+const defaultState=()=>({days:[],absences:[],nightWindow:{start:'21:00',end:'06:00'},country:'FR',profiles:{FR:defaultProfile(),DE:defaultProfile()}});
 let state;
 let viewedMonth=new Date();viewedMonth.setDate(1);
 try{const raw=JSON.parse(localStorage.getItem(KEY));state=raw&&Array.isArray(raw.days)&&raw.profiles?.FR&&raw.profiles?.DE?raw:defaultState()}catch{state=defaultState()}
+state.absences=Array.isArray(state.absences)?state.absences:[];state.nightWindow={start:'21:00',end:'06:00',...(state.nightWindow||{})};
 for(const c of ['FR','DE'])state.profiles[c]={...defaultProfile(),...state.profiles[c]};
 const $=id=>document.getElementById(id);
 const num=x=>Number(x)||0;
@@ -26,12 +27,12 @@ const human=m=>Number.isFinite(m)?fmt(m):'—';
 const weekDate=d=>new Date(d.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric'});
 
 const sums=days=>days.reduce((a,d)=>{const x=counts(d);for(const k of Object.keys(a))a[k]+=x[k];return a},{drive:0,work:0,wait:0,breaks:0,night:0});
-function show(page){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));if(page==='home')renderHome();if(page==='dashboard')renderDashboard();if(page==='monthly')renderMonth();if(page==='pay')renderPay();if(page==='settings')renderSettings();window.scrollTo(0,0)}
+function show(page){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));if(page==='home')renderHome();if(page==='dashboard')renderDashboard();if(page==='monthly')renderMonth();if(page==='pay')renderPay();if(page==='settings'){renderSettings();renderNightSettings();}if(page==='absences')renderAbsences();window.scrollTo(0,0)}
 const mondayOf=date=>{const d=new Date(date+'T12:00:00');d.setDate(d.getDate()-(d.getDay()+6)%7);return iso(d)};
 const weekEnding=start=>{const d=new Date(start+'T12:00:00');d.setDate(d.getDate()+6);return iso(d)};
 const groupByWeek=days=>{const map=new Map();days.forEach(d=>{const k=mondayOf(d.date);if(!map.has(k))map.set(k,[]);map.get(k).push(d)});return [...map.entries()].sort((a,b)=>b[0].localeCompare(a[0]))};
 function groupedMarkup(days, expandedWeek=''){const groups=groupByWeek(days);if(!groups.length)return '<p class="muted">Aucune journée enregistrée.</p>';return groups.map(([start,items])=>{const total=items.reduce((a,d)=>a+dayWork(d),0),title=`${new Date(start+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})} – ${new Date(weekEnding(start)+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}`;return `<details class="week-group" ${start===expandedWeek?"open":""}><summary><span><strong>${safe(title)}</strong><small>${items.length} journée(s)</small></span><strong class="accent">${fmt(total)}</strong></summary><div class="week-entries">${items.map(d=>{const x=counts(d);return `<button type="button" class="day-row" data-edit="${safe(d.id)}"><span><strong>${safe(weekDate(d))}</strong><small>${safe(d.start)}–${safe(d.end)} · Pause ${fmt(x.breaks)}</small></span><span class="accent">${fmt(dayWork(d))} ✎</span></button>`}).join('')}</div></details>`}).join('')}
-function renderHome(){const ds=state.days.filter(d=>d.date.startsWith(today().slice(0,7)));const mins=ds.reduce((n,d)=>n+dayWork(d),0);const s=sums(ds);const p=profile();const now=new Date();$('homeMonthLabel').textContent=now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});const rows=[['Jours travaillés',String(ds.length),'ico-calendar-days'],['Heures totales',fmt(mins),'ico-chart-no-axes-column-increasing'],['Heures de nuit renseignées',fmt(s.night),'ico-moon'],['Heures sup. (simulation)',fmt(Math.max(0,mins/60-num(p.threshold))*60),'ico-clock']];$('homeMonthRows').innerHTML=rows.map(([label,val,ico])=>`<div class="home-month-row"><i aria-hidden="true" class="${ico}"></i><span>${label}</span><strong>${val}</strong></div>`).join('')}
+function renderHome(){const ds=state.days.filter(d=>d.date.startsWith(today().slice(0,7)));const mins=ds.reduce((n,d)=>n+dayWork(d),0);const s=sums(ds);const p=profile();const now=new Date();$('homeMonthLabel').textContent=now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});const rows=[['Jours travaillés',String(ds.length),'ico-calendar-days'],['Heures totales',fmt(mins),'ico-chart-no-axes-column-increasing'],['Heures de nuit renseignées',fmt(s.night),'ico-moon'],['Heures sup. (simulation)',fmt(groupByWeek(ds).reduce((n,[start])=>{const full=state.days.filter(d=>mondayOf(d.date)===start).reduce((a,d)=>a+dayWork(d),0);const monthPart=ds.filter(d=>mondayOf(d.date)===start).reduce((a,d)=>a+dayWork(d),0);return n+(full>0?Math.max(0,full/60-num(p.threshold))*monthPart/full*60:0)},0)),'ico-clock']];$('homeMonthRows').innerHTML=rows.map(([label,val,ico])=>`<div class="home-month-row"><i aria-hidden="true" class="${ico}"></i><span>${label}</span><strong>${val}</strong></div>`).join('')}
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));
 function renderDashboard(){const days=weekDays(),s=sums(days),start=weekStart(),end=new Date(start);end.setDate(end.getDate()+6);$('period').textContent=`${start.toLocaleDateString('fr-FR')} – ${end.toLocaleDateString('fr-FR')}`;const amp=days.reduce((a,d)=>a+duration(d.start,d.end),0),work=days.reduce((a,d)=>a+dayWork(d),0);const items=[['Temps calculé*',work],['Amplitude',amp],['Pauses',s.breaks],['Conduite détaillée',s.drive],['Attente détaillée',s.wait],['Nuit éligible',s.night]];$('stats').innerHTML=items.map(([name,value])=>`<div class="stat"><small>${name}</small><strong>${fmt(value)}</strong></div>`).join('');$('daysTable').innerHTML=days.length?days.map(d=>{const x=counts(d);return `<tr><td>${safe(weekDate(d))}</td><td>${safe(d.start)}</td><td>${safe(d.end)}</td><td>${fmt(x.breaks)}</td><td class="accent">${fmt(dayWork(d))}</td><td><button class="secondary mini" data-edit="${safe(d.id)}">✎</button></td></tr>`}).join(''):'<tr><td colspan="6">Aucune journée cette semaine.</td></tr>';$('days').innerHTML=groupedMarkup(days,iso(weekStart()))}
 function renderMonth(){
@@ -96,7 +97,7 @@ function renderSettings(){const p=profile();$('country').value=state.country;for
 function syncPause(){const custom=$('pausePreset').value==='custom';$('pauseCustom').hidden=!custom;if(!custom)$('pauseCustom').value=`${String(Math.floor(Number($('pausePreset').value)/60)).padStart(2,'0')}:${String(Number($('pausePreset').value)%60).padStart(2,'0')}`}
 function syncDetails(){$('detailFields').hidden=!$('detailedMode').checked;validate()}
 function resetDay(){$('dayForm').reset();$('editId').value='';$('date').value=today();$('start').value='02:00';$('end').value='11:00';$('pausePreset').value='60';$('pauseCustom').value='01:00';$('detailedMode').checked=false;for(const [k,v] of Object.entries({drive:'06:00',work:'01:00',wait:'01:00',breaks:'01:00',night:'00:00'}))$(k).value=v;$('deleteDay').hidden=true;syncPause();syncDetails()}
-function validate(){const amp=duration($('start').value,$('end').value),pause=pauseMinutes(),detail=$('detailedMode').checked;let message='',ok=Number.isFinite(amp)&&amp>0&&Number.isFinite(pause)&&pause>=0&&pause<=amp;if(!Number.isFinite(amp)||amp===0)message='Vérifie les horaires (début et fin différents).';else if(!Number.isFinite(pause)||pause>amp)message='La pause doit être valide et inférieure à l’amplitude.';else if(detail){const d=Object.fromEntries(['drive','work','wait','breaks','night'].map(k=>[k,$(k).value]));const x=counts(d),sum=x.drive+x.work+x.wait+x.breaks;if(sum!==amp||x.breaks!==pause||x.night>x.drive+x.work+x.wait){ok=false;message='Détail incohérent : activités + pause doivent correspondre à l’amplitude, et la pause détaillée à la pause choisie.'}}$('daySummary').innerHTML=Number.isFinite(amp)&&Number.isFinite(pause)?`<div><small>Amplitude</small><strong>${fmt(amp)}</strong></div><div><small>Pause</small><strong>${fmt(pause)}</strong></div><div><small>Temps calculé*</small><strong class="accent">${fmt(Math.max(0,amp-pause))}</strong></div>`:'';$('validation').textContent=message||'✓ Durées cohérentes';$('validation').classList.toggle('warning',!ok);return ok}
+function validate(){const amp=duration($('start').value,$('end').value),pause=pauseMinutes(),detail=$('detailedMode').checked;let message='',ok=Number.isFinite(amp)&&amp>0&&Number.isFinite(pause)&&pause>=0&&pause<=amp;if(!Number.isFinite(amp)||amp===0)message='Vérifie les horaires (début et fin différents).';else if(!Number.isFinite(pause)||pause>amp)message='La pause doit être valide et inférieure à l’amplitude.';else if(detail){const d=Object.fromEntries(['drive','work','wait','breaks','night'].map(k=>[k,$(k).value]));const x=counts(d),sum=x.drive+x.work+x.wait+x.breaks;if(sum!==amp||x.breaks!==pause||x.night>x.drive+x.work+x.wait){ok=false;message='Détail incohérent : activités + pause doivent correspondre à l’amplitude, et la pause détaillée à la pause choisie.'}}$('daySummary').innerHTML=Number.isFinite(amp)&&Number.isFinite(pause)?`<div><small>Amplitude</small><strong>${fmt(amp)}</strong></div><div><small>Pause</small><strong>${fmt(pause)}</strong></div><div><small>Temps calculé*</small><strong class="accent">${fmt(Math.max(0,amp-pause))}</strong></div>`:'';$('nightPreview').textContent=Number.isFinite(amp)&&amp>0?'Plage de nuit indicative : '+fmt(nightOverlap($('start').value,$('end').value,state.nightWindow.start,state.nightWindow.end))+' (avant déduction des pauses). Non assimilée automatiquement à une prime.':'';$('validation').textContent=message||'✓ Durées cohérentes';$('validation').classList.toggle('warning',!ok);return ok}
 function editDay(id){const d=state.days.find(x=>x.id===id);if(!d)return;resetDay();for(const k of ['date','start','end','notes'])$(k).value=d[k]||'';$('editId').value=id;const x=counts(d),p=x.breaks;const presets=['0','30','45','60','90'];$('pausePreset').value=presets.includes(String(p))?String(p):'custom';$('pauseCustom').value=`${String(Math.floor(p/60)).padStart(2,'0')}:${String(p%60).padStart(2,'0')}`;$('detailedMode').checked=d.mode!=='quick';for(const k of ['drive','work','wait','breaks','night'])if(d[k])$(k).value=d[k];syncPause();syncDetails();$('deleteDay').hidden=false;show('journal')}
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.page)));
 $('newDay').onclick=()=>{resetDay();show('journal')};$('resetDay').onclick=resetDay;
@@ -108,8 +109,67 @@ $('deleteDay').onclick=()=>{const id=$('editId').value;if(id&&confirm('Supprimer
 $('country').onchange=e=>{state.country=e.target.value;save();renderSettings()};
 $('settingsForm').onsubmit=e=>{e.preventDefault();const p={};for(const k of ['rate','threshold','ot','nightRate','meal','bonus','deduction','monthlyBonus','dailyBonus','dailyAllowance'])p[k]=num($(k).value);p.waitingMode=$('waitingMode').value;state.profiles[state.country]=p;if(save())alert('Réglages enregistrés pour '+state.country)};
 $('exportData').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),...state},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='truckmate-sauvegarde.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-$('importData').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data.days)||!data.profiles?.FR||!data.profiles?.DE||!['FR','DE'].includes(data.country))throw Error('Format non reconnu');if(!confirm('Remplacer toutes les données locales par cette sauvegarde ?'))return;state={days:data.days,country:data.country,profiles:data.profiles};if(save()){resetDay();show('dashboard')}}catch(err){alert('Import impossible : '+err.message)}finally{e.target.value=''}};
-resetDay();renderHome();renderDashboard();if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
+$('importData').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data.days)||!data.profiles?.FR||!data.profiles?.DE||!['FR','DE'].includes(data.country))throw Error('Format non reconnu');if(!confirm('Remplacer toutes les données locales par cette sauvegarde ?'))return;state={days:data.days,absences:Array.isArray(data.absences)?data.absences:[],nightWindow:{start:'21:00',end:'06:00',...(data.nightWindow||{})},country:data.country,profiles:data.profiles};if(save()){resetDay();show('dashboard')}}catch(err){alert('Import impossible : '+err.message)}finally{e.target.value=''}};
+
+// V3: optional tools. Keep truckmate.v1, days and profiles fully backward compatible.
+function nightOverlap(start,end,nightStart,nightEnd){
+ const a=minutes(start),b=minutes(end),n1=minutes(nightStart),n2=minutes(nightEnd);
+ if([a,b,n1,n2].some(x=>!Number.isFinite(x)))return 0;
+ const endAbs=b<=a?b+1440:b;let total=0;
+ // Check previous, current and next night's window to cover midnight safely.
+ for(let day=-1;day<=1;day++){
+  const s=day*1440+n1,e=day*1440+n2+(n2<=n1?1440:0);
+  total+=Math.max(0,Math.min(endAbs,e)-Math.max(a,s));
+ }
+ return total;
+}
+function renderAbsences(){
+ const list=$('absenceList');if(!list)return;
+ const entries=[...state.absences].sort((a,b)=>b.date.localeCompare(a.date));
+ list.innerHTML=entries.length?entries.map(a=>`<div class="absence-row"><span><strong>${safe(a.date)}</strong><small>${safe(a.type)}${a.note?' · '+safe(a.note):''}</small></span><button type="button" class="secondary mini" data-delete-absence="${safe(a.date)}">Supprimer</button></div>`).join(''):'<p class="muted">Aucune absence enregistrée.</p>';
+}
+$('absenceDate').value=today();
+$('absenceForm').addEventListener('submit',e=>{
+ e.preventDefault();const date=$('absenceDate').value;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
+ const entry={date,type:$('absenceType').value,note:$('absenceNote').value.trim()};
+ const previous=state.absences.findIndex(x=>x.date===date);
+ if(previous>=0&&!confirm('Remplacer l’absence déjà enregistrée à cette date ?'))return;
+ if(previous>=0)state.absences[previous]=entry;else state.absences.push(entry);
+ if(save()){$('absenceNote').value='';renderAbsences()}
+});
+$('absenceList').addEventListener('click',e=>{const date=e.target.closest('[data-delete-absence]')?.dataset.deleteAbsence;if(!date||!confirm('Supprimer cette absence ?'))return;state.absences=state.absences.filter(a=>a.date!==date);if(save())renderAbsences()});
+function renderNightSettings(){$('nightStartSetting').value=state.nightWindow.start;$('nightEndSetting').value=state.nightWindow.end}
+$('saveNightWindow').onclick=()=>{const start=$('nightStartSetting').value,end=$('nightEndSetting').value;if(!Number.isFinite(minutes(start))||!Number.isFinite(minutes(end))||start===end){alert('Choisis deux heures différentes.');return}state.nightWindow={start,end};if(save()){validate();alert('Plage de nuit enregistrée (information uniquement).')}};
+// A timer records timestamps only; it never silently writes or overwrites a workday.
+const TIMER_KEY='truckelsass.timer.v3';
+let timerStart=Number(localStorage.getItem(TIMER_KEY))||0;
+function timerDisplay(){const running=timerStart>0,elapsed=running?Math.max(0,Math.floor((Date.now()-timerStart)/60000)):0;
+ $('timerStatus').textContent=running?'Service en cours':'Prêt à démarrer';$('timerElapsed').textContent=fmt(elapsed);
+ $('timerToggle').textContent=running?'Terminer':'Démarrer';$('timerToggle').classList.toggle('running',running);
+}
+$('timerToggle').onclick=()=>{
+ if(!timerStart){timerStart=Date.now();try{localStorage.setItem(TIMER_KEY,String(timerStart))}catch{}timerDisplay();return}
+ if(!confirm('Terminer le chronomètre ? Tu pourras ensuite enregistrer les horaires dans le journal.'))return;
+ const startDate=new Date(timerStart),endDate=new Date();timerStart=0;localStorage.removeItem(TIMER_KEY);
+ resetDay();$('date').value=iso(startDate);$('start').value=`${String(startDate.getHours()).padStart(2,'0')}:${String(startDate.getMinutes()).padStart(2,'0')}`;
+ $('end').value=`${String(endDate.getHours()).padStart(2,'0')}:${String(endDate.getMinutes()).padStart(2,'0')}`;
+ if(endDate-startDate>=86400000){alert('Service supérieur à 24 h : vérifie manuellement tes horaires.')}validate();timerDisplay();show('journal');
+};
+timerDisplay();setInterval(()=>{if(timerStart&&document.visibilityState==='visible')timerDisplay()},30000);
+// Print native iOS sheet: choose "Enregistrer dans Fichiers" to produce a PDF.
+function printMonth(){const month=viewedMonth.toLocaleDateString('fr-FR',{month:'long',year:'numeric'}),prefix=iso(viewedMonth).slice(0,7),days=state.days.filter(d=>d.date.startsWith(prefix)).sort((a,b)=>a.date.localeCompare(b.date));
+ const rows=days.map(d=>`<tr><td>${safe(d.date)}</td><td>${safe(d.start)}</td><td>${safe(d.end)}</td><td>${fmt(counts(d).breaks)}</td><td>${fmt(dayWork(d))}</td></tr>`).join('');
+ const total=days.reduce((n,d)=>n+dayWork(d),0);
+ const report=document.createElement('section');report.id='printReport';report.innerHTML=`<h1>TruckElsass — ${safe(month)}</h1><p>Journal personnel · ${days.length} journées · ${fmt(total)} après pauses</p><table><thead><tr><th>Date</th><th>Début</th><th>Fin</th><th>Pause</th><th>Durée*</th></tr></thead><tbody>${rows}</tbody></table><p>* Durée indicative, pas nécessairement temps rémunéré.</p>`;
+ document.body.appendChild(report);window.print();setTimeout(()=>report.remove(),1500);
+}
+$('printMonth').onclick=printMonth;$('homePrint').onclick=()=>{viewedMonth=new Date();viewedMonth.setDate(1);printMonth()};
+// Navigation may be reached from dynamically created cards as well as static buttons.
+document.addEventListener('click',e=>{const target=e.target.closest('[data-go]');if(target&&!target.closest('.home-grid')&&!target.closest('.home-tools'))show(target.dataset.go)});
+renderNightSettings();
+
+resetDay();renderHome();renderDashboard();if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(()=>{});
 
 // V2.3 : navigation des onglets mensuels, sans toucher aux données enregistrées.
-(function(){const weeks=document.getElementById('monthWeeksTab'),calendar=document.getElementById('monthCalendarTab');function selectMonthView(which){const isWeeks=which==='weeks';weeks.classList.toggle('active',isWeeks);calendar.classList.toggle('active',!isWeeks);weeks.setAttribute('aria-selected',String(isWeeks));calendar.setAttribute('aria-selected',String(!isWeeks));document.querySelector('.month-weeks-view').hidden=!isWeeks;document.querySelector('.month-calendar-view').hidden=isWeeks}weeks.addEventListener('click',()=>selectMonthView('weeks'));calendar.addEventListener('click',()=>selectMonthView('calendar'));document.getElementById('payResults').addEventListener('click',e=>{if(e.target.closest('[data-go="settings"]'))show('settings')})})();
+(function(){const weeks=document.getElementById('monthWeeksTab'),calendar=document.getElementById('monthCalendarTab');function selectMonthView(which){const isWeeks=which==='weeks';weeks.classList.toggle('active',isWeeks);calendar.classList.toggle('active',!isWeeks);weeks.setAttribute('aria-selected',String(isWeeks));calendar.setAttribute('aria-selected',String(!isWeeks));document.querySelector('.month-weeks-view').hidden=!isWeeks;document.querySelector('.month-calendar-view').hidden=isWeeks}weeks.addEventListener('click',()=>selectMonthView('weeks'));calendar.addEventListener('click',()=>selectMonthView('calendar'));})();
