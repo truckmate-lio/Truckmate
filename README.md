@@ -1,11 +1,6 @@
-# TruckElsass V2.0
+TruckElsass V2.1 — refonte visuelle fidèle à la maquette.
 
-Refonte graphique rouge alsacien / noir, écran d’accueil et icônes PWA.
-
-Conserve le stockage historique `truckmate.v1` pour ne pas perdre les journées et profils existants.
-
-Publication : remplacer les fichiers à la racine du dépôt GitHub Pages. Ne pas renommer le dépôt ni changer son URL.
-
-Avant mise à jour : exporter la sauvegarde JSON dans Réglages. Ne pas désinstaller l’application.
-
-Note : les heures et paies restent des estimations configurables, non des calculs légaux certifiés.
+Conserve le stockage local existant et le moteur de paie de la V2.0.
+Sauvegarde JSON avant toute mise à jour.
+Installer les 9 fichiers à la racine du dépôt GitHub Pages.
+La maquette est une référence artistique : la version web adapte les effets et les typographies aux contraintes du navigateur.
