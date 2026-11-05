@@ -5,3 +5,6 @@
 
 /* V1.2 */
 .month-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0;text-transform:capitalize}.month-controls strong{font-size:17px}.month-controls button{min-width:48px}nav button{padding:7px 3px;font-size:17px}nav button span{font-size:10px}@media(max-width:360px){nav button span{font-size:9px}}
+
+/* V1.3: compact collapsible week groups */
+.week-group{margin:10px 0;border:1px solid #354c6d;border-radius:14px;background:#14243a;overflow:hidden}.week-group summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;padding:15px;list-style:none}.week-group summary::-webkit-details-marker{display:none}.week-group summary span{display:grid;gap:5px}.week-group summary small,.day-row small{color:#a8b7ce;font-size:12px}.week-group summary:after{content:'⌄';color:#ff963d}.week-group[open] summary:after{content:'⌃'}.week-entries{border-top:1px solid #314764}.day-row{display:flex;width:100%;align-items:center;justify-content:space-between;text-align:left;gap:10px;background:transparent;color:#e9f0fa;border-radius:0;border-bottom:1px solid #2c405b;padding:13px 15px;font-weight:500}.day-row:last-child{border-bottom:0}.day-row span:first-child{display:grid;gap:5px}.day-row .accent{white-space:nowrap;font-weight:750}#payPeriod{margin:10px 0}

@@ -1,7 +1,9 @@
-# TruckMate PWA V1.2
+# TruckMate PWA V1.3
 
-Ajout du tableau de bord mensuel avec navigation par mois, total des journées et estimation brute partielle.
+- Journées regroupées par semaine, repliables dans Semaine et Mois.
+- Estimation de paie semaine ou mois, profils France et Allemagne séparés.
+- Majoration des heures au-delà d’un seuil configurable, primes de nuit renseignées, indemnités et net approximatif.
+- Conservation de la clé localStorage `truckmate.v1` et migration non destructive des profils.
+- Export JSON conseillé avant mise à jour.
 
-Les données restent sous la clé localStorage `truckmate.v1` pour conserver les anciennes journées. Faire un export JSON avant la mise à jour.
-
-La paie mensuelle est une simulation incomplète : heures supplémentaires et primes hebdomadaires non reprises dans le total mensuel, pas de net estimé.
+**Limites** : règles juridiques non automatisées, net indicatif, heures de nuit non automatiques en saisie rapide, prorata approximatif des heures supplémentaires pour semaines à cheval sur deux mois. Le logiciel n’est pas un bulletin de paie.
